@@ -11,7 +11,7 @@
             font-family: Arial, sans-serif;
             text-align: center;
         }
-        .game-menu, .maintenance-menu {
+        .game-menu, .maintenance-menu, .game-screen {
             display: none;
         }
         .active {
@@ -33,7 +33,7 @@
         .game.selected {
             border-color: yellow;
         }
-        .maintenance-menu {
+        .maintenance-menu, .game-screen {
             position: absolute;
             top: 50%;
             left: 50%;
@@ -41,6 +41,11 @@
             background: rgba(0, 0, 0, 0.9);
             padding: 20px;
             border: 2px solid white;
+        }
+        iframe {
+            width: 800px;
+            height: 600px;
+            border: none;
         }
     </style>
 </head>
@@ -55,9 +60,21 @@
         <p>Settings & Configurations</p>
         <button onclick="closeMaintenance()">Close</button>
     </div>
+    <div class="game-screen" id="gameScreen">
+        <h2 id="gameTitle"></h2>
+        <iframe id="gameFrame"></iframe>
+        <br>
+        <button onclick="closeGame()">Back to Menu</button>
+    </div>
 
     <script>
-        const games = ['Pac-Man', 'Donkey Kong', 'Street Fighter', 'Space Invaders', 'Tetris'];
+        const games = [
+            { name: 'Pac-Man', url: 'https://www.retrogames.cc/embed/21212-pac-man.html' },
+            { name: 'Donkey Kong', url: 'https://www.retrogames.cc/embed/21533-donkey-kong.html' },
+            { name: 'Street Fighter', url: 'https://www.retrogames.cc/embed/21667-street-fighter.html' },
+            { name: 'Space Invaders', url: 'https://www.retrogames.cc/embed/21343-space-invaders.html' },
+            { name: 'Tetris', url: 'https://www.retrogames.cc/embed/21492-tetris.html' }
+        ];
         const gameList = document.getElementById('gameList');
         let selectedGameIndex = 0;
 
@@ -69,9 +86,22 @@
                 if (index === selectedGameIndex) {
                     gameDiv.classList.add('selected');
                 }
-                gameDiv.innerText = game;
+                gameDiv.innerText = game.name;
                 gameList.appendChild(gameDiv);
             });
+        }
+
+        function openGame() {
+            document.querySelector('.game-menu').classList.remove('active');
+            document.getElementById('gameScreen').classList.add('active');
+            document.getElementById('gameTitle').innerText = games[selectedGameIndex].name;
+            document.getElementById('gameFrame').src = games[selectedGameIndex].url;
+        }
+
+        function closeGame() {
+            document.getElementById('gameScreen').classList.remove('active');
+            document.querySelector('.game-menu').classList.add('active');
+            document.getElementById('gameFrame').src = '';
         }
 
         function openMaintenance() {
@@ -90,7 +120,7 @@
             } else if (event.key === 'ArrowLeft') {
                 selectedGameIndex = (selectedGameIndex - 1 + games.length) % games.length;
             } else if (event.key === 'Enter') {
-                alert(`Launching ${games[selectedGameIndex]}!`);
+                openGame();
             } else if (event.key === 'm') {
                 openMaintenance();
             }
